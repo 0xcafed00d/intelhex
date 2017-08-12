@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int) (nextOffset int, err error) {
+func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int) (nextOffset int, nextAddr uint16, err error) {
 	c := checksum{}
 
 	length := maxlen
@@ -16,7 +16,7 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	c.addByte(byte(length))
 	c.addWord(address)
 
-	_, err = fmt.Fprintf(w, ":%02x %04x 00", length, address)
+	_, err = fmt.Fprintf(w, ":%02x%04x00", length, address)
 	if err != nil {
 		return
 	}
@@ -24,7 +24,7 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	for n := 0; n < length; n++ {
 		b := data[offset+n]
 		c.addByte(b)
-		_, err = fmt.Fprintf(w, "%02x ", b)
+		_, err = fmt.Fprintf(w, "%02x", b)
 		if err != nil {
 			return
 		}
@@ -36,6 +36,6 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	}
 
 	nextOffset = offset + length
-
+	nextAddr += uint16(length)
 	return
 }
