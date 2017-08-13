@@ -1,30 +1,27 @@
 package intelhex
 
-import "testing"
-import "os"
-import "github.com/simulatedsimian/assert"
+import (
+	"os"
+	"testing"
+
+	"github.com/simulatedsimian/assert"
+)
 
 func TestCheckSum(t *testing.T) {
+	assert := assert.Make(t)
 	c := checksum{}
 
-	if c.value() != 0x00 {
-		t.Fail()
-	}
+	assert(c.value()).Equal(byte(0x00))
 
 	c.addByte(1)
-	if c.value() != 0xff {
-		t.Fail()
-	}
+	assert(c.value()).Equal(byte(0xff))
 
 	c.clear()
-	if c.value() != 0x00 {
-		t.Fail()
-	}
+	assert(c.value()).Equal(byte(0x00))
 
 	c.addBytes([]byte{0x03, 0x00, 0x30, 0x00, 0x02, 0x33, 0x7A})
-	if c.value() != 0x1e {
-		t.Fail()
-	}
+	assert(c.value()).Equal(byte(0x1e))
+
 }
 
 func TestStrToHex(t *testing.T) {
