@@ -17,7 +17,7 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	chk.addByte(byte(length))
 	chk.addWord(address)
 
-	_, err = fmt.Fprintf(w, ":%02x%04x00", length, address)
+	_, err = fmt.Fprintf(w, ":%02X%04X00", length, address)
 	if err != nil {
 		return
 
@@ -26,13 +26,13 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	for n := 0; n < length; n++ {
 		b := data[offset+n]
 		chk.addByte(b)
-		_, err = fmt.Fprintf(w, "%02x", b)
+		_, err = fmt.Fprintf(w, "%02X", b)
 		if err != nil {
 			return
 		}
 	}
 
-	_, err = fmt.Fprintf(w, "%02x\n", chk.value())
+	_, err = fmt.Fprintf(w, "%02X\n", chk.value())
 	if err != nil {
 		return
 	}

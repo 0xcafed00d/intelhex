@@ -1,7 +1,7 @@
 package intelhex
 
 import (
-	"os"
+	"bytes"
 	"testing"
 
 	"github.com/simulatedsimian/assert"
@@ -34,5 +34,17 @@ func TestStrToHex(t *testing.T) {
 }
 
 func TestLineOutput(t *testing.T) {
-	writeDataLine(os.Stdout, []byte{0x02, 0x33, 0x7A}, 0x0030, 0, 16)
+	assert := assert.Make(t)
+
+	buf := &bytes.Buffer{}
+	writeDataLine(buf, []byte{0x02, 0x33, 0x7A}, 0x0030, 0, 16)
+	assert(buf.String()).Equal(":0300300002337A1E\n")
+
+	buf.Reset()
+	writeDataLine(buf, []byte{0x02, 0x33, 0x7A}, 0x0030, 0, 3)
+	assert(buf.String()).Equal(":0300300002337A1E\n")
+
+	buf.Reset()
+	writeDataLine(buf, []byte{0x02, 0x33, 0x7A}, 0x0030, 0, 1)
+	assert(buf.String()).Equal(":0100300002CD\n")
 }
