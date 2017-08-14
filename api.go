@@ -1,6 +1,10 @@
 package intelhex
 
-import "io"
+import (
+	"bufio"
+	"io"
+	"strings"
+)
 
 type ByteBlock struct {
 	Address uint16
@@ -8,7 +12,27 @@ type ByteBlock struct {
 }
 
 func Read(r io.Reader) ([]ByteBlock, error) {
-	return nil, nil
+	result := []ByteBlock{}
+
+	br := bufio.NewReader(r)
+
+	for {
+		line, err := br.ReadString('\n')
+		line = strings.TrimSpace(line)
+
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		bb, err := processLineData(line)
+		if err != nil {
+			return nil, err
+		}
+		bb = bb
+	}
+	return result, nil
 }
 
 func Write(w io.Writer, blocks []ByteBlock) error {

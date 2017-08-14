@@ -23,6 +23,36 @@ func joinByteBlocks(b1, b2 ByteBlock) ByteBlock {
 	return ByteBlock{Address: b1.Address, Data: r}
 }
 
+func verifyCheckSum(data []byte) bool {
+	chk := checksum{}
+	chk.addBytes(data[:len(data)-1])
+
+	return chk.value() == data[len(data)-1]
+}
+
+func processLineData(line string) (ByteBlock, error) {
+	result := ByteBlock{}
+
+	if len(line) < 11 {
+		return result, fmt.Errorf("input line too short: %s", line)
+	}
+
+	if line[0] != ':' {
+		return result, fmt.Errorf("input line does not start with colon: %s", line)
+	}
+
+	data, err := hexStrToBytes(line[1:])
+	if err != nil {
+		return result, err
+	}
+
+	if !verifyCheckSum(data) {
+		return result, fmt.Errorf("input line bad checksum: %s", line)
+	}
+
+	return result, nil
+}
+
 func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int) (nextOffset int, nextAddr uint16, err error) {
 	chk := checksum{}
 
