@@ -6,6 +6,23 @@ import (
 	"strconv"
 )
 
+func isContiguous(b1, b2 ByteBlock) bool {
+	return (b1.Address+uint16(len(b1.Data)) == b2.Address) ||
+		(b2.Address+uint16(len(b2.Data)) == b1.Address)
+}
+
+// assumes blocks are contiguous - order of supplied blocks not important
+func joinByteBlocks(b1, b2 ByteBlock) ByteBlock {
+	if b1.Address > b2.Address {
+		b1, b2 = b2, b1
+	}
+
+	r := make([]byte, len(b1.Data)+len(b2.Data))
+	copy(r, b1.Data)
+	copy(r[len(b1.Data):], b2.Data)
+	return ByteBlock{Address: b1.Address, Data: r}
+}
+
 func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int) (nextOffset int, nextAddr uint16, err error) {
 	chk := checksum{}
 
