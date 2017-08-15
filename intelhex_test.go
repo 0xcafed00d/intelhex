@@ -93,3 +93,19 @@ func TestJoinBlocks(t *testing.T) {
 	assert(joinByteBlocks(b1, b2)).Equal(b4)
 	assert(joinByteBlocks(b2, b1)).Equal(b4)
 }
+
+func TestProcessLine(t *testing.T) {
+	assert := assert.Make(t)
+
+	assert(processLineData(":0300300002337A1E")).NoError()
+	assert(processLineData(":0300300002337A1F")).HasError()
+	assert(processLineData("0300300002337A1E")).HasError()
+	assert(processLineData(":030030")).HasError()
+	assert(processLineData(":0300300002337pA1F")).HasError()
+
+	assert(processLineData(":0300300002337A1E")).
+		Equal(ByteBlock{0x30, []byte{0x02, 0x33, 0x7a}}, nil)
+
+	assert(processLineData(":00000001FF")).
+		Equal(ByteBlock{}, io.EOF)
+}

@@ -50,6 +50,19 @@ func processLineData(line string) (ByteBlock, error) {
 		return result, fmt.Errorf("input line bad checksum: %s", line)
 	}
 
+	dataLen := data[0]
+	addr := uint16(data[1])<<8 + uint16(data[2])
+	recType := data[3]
+
+	if recType == 0 {
+		result.Address = addr
+		result.Data = data[4 : 4+dataLen]
+	}
+
+	if recType == 1 {
+		return result, io.EOF
+	}
+
 	return result, nil
 }
 
