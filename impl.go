@@ -57,10 +57,10 @@ func processLineData(line string) (ByteBlock, error) {
 	if recType == 0 {
 		result.Address = addr
 		result.Data = data[4 : 4+dataLen]
-	}
-
-	if recType == 1 {
+	} else if recType == 1 {
 		return result, io.EOF
+	} else {
+		return result, fmt.Errorf("Unsupported record type: %02x", recType)
 	}
 
 	return result, nil
