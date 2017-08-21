@@ -12,8 +12,7 @@ type ByteBlock struct {
 }
 
 func Read(r io.Reader) ([]ByteBlock, error) {
-	result := []ByteBlock{}
-
+	blocks := []ByteBlock{}
 	br := bufio.NewReader(r)
 
 	for {
@@ -26,13 +25,17 @@ func Read(r io.Reader) ([]ByteBlock, error) {
 		if err != nil {
 			return nil, err
 		}
-		bb, err := processLineData(line)
+		block, err := processLineData(line)
 		if err != nil {
 			return nil, err
 		}
-		bb = bb
+		if len(blocks) == 0 || !isContiguous(block, blocks[len(blocks)-1]) {
+			blocks = append(blocks, block)
+		} else {
+			blocks[len(blocks)-1] = joinByteBlocks(block, blocks[len(blocks)-1])
+		}
 	}
-	return result, nil
+	return blocks, nil
 }
 
 func Write(w io.Writer, blocks []ByteBlock) error {
