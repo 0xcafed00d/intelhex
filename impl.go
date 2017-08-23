@@ -98,7 +98,7 @@ func writeDataLine(w io.Writer, data []byte, address uint16, offset, maxlen int)
 	}
 
 	nextOffset = offset + length
-	nextAddr += uint16(length)
+	nextAddr = address + uint16(length)
 	return
 }
 

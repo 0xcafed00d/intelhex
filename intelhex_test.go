@@ -5,11 +5,17 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math/rand"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/simulatedsimian/assert"
 )
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
 
 func TestCheckSum(t *testing.T) {
 	assert := assert.Make(t)
@@ -98,8 +104,8 @@ func TestProcessLine(t *testing.T) {
 	assert := assert.Make(t)
 
 	assert(processLineData(":0300300002337A1E")).NoError()
-	assert(processLineData(":0300300002337A1F")).HasError()
 	assert(processLineData("0300300002337A1E")).HasError()
+	assert(processLineData(":0300300002337A1F")).HasError()
 	assert(processLineData(":030030")).HasError()
 	assert(processLineData(":0300300002337pA1F")).HasError()
 
@@ -108,4 +114,31 @@ func TestProcessLine(t *testing.T) {
 
 	assert(processLineData(":00000001FF")).
 		Equal(ByteBlock{}, io.EOF)
+}
+
+func createRandomByteBlock() ByteBlock {
+	bb := ByteBlock{}
+	size := rand.Intn(64) + 20
+
+	bb.Address = uint16(rand.Intn(0x7fff))
+	bb.Data = make([]byte, size)
+	for i := range bb.Data {
+		bb.Data[i] = byte(rand.Intn(255))
+	}
+
+	return bb
+}
+
+func TestReadFile(t *testing.T) {
+	assert := assert.Make(t)
+	buf := bytes.Buffer{}
+
+	bb := createRandomByteBlock()
+
+	WriteBlock(&buf, bb)
+	WriteEOF(&buf)
+	fmt.Println(string(buf.Bytes()))
+
+	assert(Read(&buf)).Equal(bb, nil)
+
 }

@@ -66,5 +66,5 @@ func WriteBlock(w io.Writer, block ByteBlock) error {
 }
 
 func WriteEOF(w io.Writer) error {
-	return nil
+	return writeEOFLine(w)
 }
