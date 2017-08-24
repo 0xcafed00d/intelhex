@@ -18,14 +18,13 @@ func Read(r io.Reader) ([]ByteBlock, error) {
 	for {
 		line, err := br.ReadString('\n')
 		line = strings.TrimSpace(line)
-
-		if err == io.EOF {
-			break
-		}
 		if err != nil {
 			return nil, err
 		}
 		block, err := processLineData(line)
+		if err == io.EOF {
+			break
+		}
 		if err != nil {
 			return nil, err
 		}

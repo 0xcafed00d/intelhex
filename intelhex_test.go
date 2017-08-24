@@ -139,6 +139,5 @@ func TestReadFile(t *testing.T) {
 	WriteEOF(&buf)
 	fmt.Println(string(buf.Bytes()))
 
-	assert(Read(&buf)).Equal(bb, nil)
-
+	assert(Read(&buf)).Equal([]ByteBlock{bb}, nil)
 }
